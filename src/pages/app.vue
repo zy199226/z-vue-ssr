@@ -1,0 +1,20 @@
+<template lang="html">
+    <section>
+        <ul>
+            <li><router-link to="/aaa">aaa</router-link></li>
+            <li><router-link to="/bbb">bbb</router-link></li>
+            <li><router-link to="/ccc">ccc</router-link></li>
+        </ul>
+        <router-view></router-view>
+    </section>
+</template>
+
+<script>
+export default {
+};
+</script>
+
+<style lang="sass">
+    p
+        color: pink
+</style>
