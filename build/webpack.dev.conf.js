@@ -23,7 +23,7 @@ module.exports = merge(baseWebpackConfig, {
         contentBase: path.join(__dirname, '../dist'),
         compress: true,
         host: ip,
-        port: 9999,
+        // port: 9999,
         hot: true,
         inline: true,
         open: true,

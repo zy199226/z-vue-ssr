@@ -67,7 +67,7 @@ module.exports = {
                     options: {
                         limit: 5 * 1024, // 图片大小 > limit 使用file-loader, 反之使用url-loader
                         outputPath: './images/',
-                        publicPath: './images/'
+                        publicPath: '.。/images/'
                     }
                 }
             }
@@ -75,7 +75,10 @@ module.exports = {
     },
 
     resolve: {
-        extensions: ['.js', '.vue', '.json']
+        extensions: ['.js', '.vue', '.json'],
+        alias: {
+            '@': path.join(__dirname, '..', 'src')
+        }
     },
 
     plugins: [
