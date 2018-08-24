@@ -5,6 +5,8 @@ const os = require('os');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
+const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+const portfinder = require('portfinder');
 const baseWebpackConfig = require('./webpack.base.conf');
 
 let ip = 'localhost';
@@ -18,27 +20,32 @@ if (os.networkInterfaces().en4) {
     ip = filterIP(os.networkInterfaces().en0);
 }
 
-module.exports = merge(baseWebpackConfig, {
+const devWebpackConfig = merge(baseWebpackConfig, {
     devServer: {
         contentBase: path.join(__dirname, '../dist'),
+        publicPath: '/',
         compress: true,
         host: ip,
-        // port: 9999,
+        port: 9090,
         hot: true,
         inline: true,
         open: true,
-        clientLogLevel: 'warning'
+        clientLogLevel: 'warning',
+        quiet: true,
+        historyApiFallback: true,
         // proxy: {
-        //     '/api': {
-        //         target: '',
-        //         pathRewrite: { '^/api': '' }
+        //     '/testfoodie': {
+        //         // target: 'https://xcx.thehour.cn',
+        //         target: 'http://foodie.dev.php',
+        //         pathRewrite: { '^/testfoodie': '' },
+        //         changeOrigin: true
         //     }
         // }
     },
 
     plugins: [
         new CleanWebpackPlugin(
-            ['dist/css', 'dist/js'],
+            ['dist/css', 'dist/js', 'dist/images'],
             {
                 root: path.join(__dirname, '../'),
                 verbose: true,
@@ -57,4 +64,24 @@ module.exports = merge(baseWebpackConfig, {
         }),
         new HtmlWebpackHarddiskPlugin()
     ]
+});
+
+module.exports = new Promise((resolve, reject) => {
+    portfinder.basePort = devWebpackConfig.devServer.port;
+    portfinder.getPort((err, port) => {
+        if (err) {
+            reject(err);
+        } else {
+            devWebpackConfig.devServer.port = port;
+
+            devWebpackConfig.plugins.push(new FriendlyErrorsWebpackPlugin({
+                compilationSuccessInfo: {
+                    messages: [`runing here http://${ip}:${port}`]
+                },
+                onError: '/n'
+            }));
+
+            resolve(devWebpackConfig);
+        }
+    });
 });

@@ -17,9 +17,9 @@ module.exports = {
 
     output: {
         path: path.resolve(__dirname, '../dist'),
-        filename: './js/[name].[hash:8].js',
-        chunkFilename: './js/[name].[hash:8].js',
-        publicPath: ''
+        filename: 'js/[name].[hash:8].js',
+        chunkFilename: 'js/[name].[hash:8].js',
+        publicPath: '/'
     },
 
     module: {
@@ -66,8 +66,8 @@ module.exports = {
                     loader: 'url-loader',
                     options: {
                         limit: 5 * 1024, // 图片大小 > limit 使用file-loader, 反之使用url-loader
-                        outputPath: './images/',
-                        publicPath: '.。/images/'
+                        outputPath: 'images',
+                        // publicPath: '../images/'
                     }
                 }
             }
@@ -83,8 +83,8 @@ module.exports = {
 
     plugins: [
         new MiniCssExtractPlugin({
-            filename: devMode ? './css/[name].css' : './css/[name].[hash:8].css',
-            chunkFilename: devMode ? './css/[id].css' : './css/[id].[hash:8].css'
+            filename: devMode ? 'css/[name].css' : 'css/[name].[hash:8].css',
+            chunkFilename: devMode ? 'css/[id].css' : 'css/[id].[hash:8].css'
         }),
         new HappyPack({
             id: 'happyBabel',
