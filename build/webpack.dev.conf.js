@@ -2,9 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 const merge = require('webpack-merge');
 const os = require('os');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const portfinder = require('portfinder');
 const baseWebpackConfig = require('./webpack.base.conf');
@@ -44,25 +42,15 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     },
 
     plugins: [
-        new CleanWebpackPlugin(
-            ['dist/css', 'dist/js', 'dist/images'],
-            {
-                root: path.join(__dirname, '../'),
-                verbose: true,
-                dry: false
-            }
-        ),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NamedModulesPlugin(),
         new HtmlWebpackPlugin({
-            filename: './index.html',
+            filename: 'index.html',
             template: path.join(__dirname, '../src/index.html'),
             inject: true,
             minify: true,
             hash: true,
-            alwaysWriteToDisk: true
         }),
-        new HtmlWebpackHarddiskPlugin()
     ]
 });
 

@@ -26,7 +26,10 @@ module.exports = {
         rules: [
             {
                 test: /\.vue$/,
-                use: 'vue-loader'
+                use: [
+                    // 'thread-loader',
+                    'vue-loader'
+                ]
             },
             {
                 test: /\.js$/,
@@ -61,13 +64,24 @@ module.exports = {
                 ]
             },
             {
-                test: /\.(png|jpeg|jpg|gif|svg|bmp|eot|woff|woff2|ttf)$/,
+                test: /\.(png|jpeg|jpg|gif)$/,
                 use: {
                     loader: 'url-loader',
                     options: {
                         limit: 5 * 1024, // 图片大小 > limit 使用file-loader, 反之使用url-loader
                         outputPath: 'images',
                         // publicPath: '../images/'
+                    }
+                }
+            },
+            {
+                test: /\.(svg|bmp|eot|woff|woff2|ttf)$/,
+                use: {
+                    loader: 'url-loader',
+                    options: {
+                        limit: 5 * 1024, // 图片大小 > limit 使用file-loader, 反之使用url-loader
+                        outputPath: 'assets',
+                        publicPath: '../assets/'
                     }
                 }
             }

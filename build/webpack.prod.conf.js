@@ -66,7 +66,6 @@ module.exports = merge(baseWebpackConfig, {
             filename: path.join(__dirname, '../dist/index.html'),
             template: path.join(__dirname, '../src/index.html'),
             inject: true,
-            hash: true,
             minify: {
                 removeAttributeQuotes: true
             }
