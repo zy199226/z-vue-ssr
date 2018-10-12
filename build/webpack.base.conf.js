@@ -16,10 +16,10 @@ module.exports = {
     },
 
     output: {
-        path: path.resolve(__dirname, '../dist'),
+        path: path.resolve(__dirname, '../dist/static'),
         filename: 'js/[name].[hash:8].js',
         chunkFilename: 'js/[name].[hash:8].js',
-        publicPath: '/'
+        publicPath: '/static/'
     },
 
     module: {
@@ -27,7 +27,6 @@ module.exports = {
             {
                 test: /\.vue$/,
                 use: [
-                    // 'thread-loader',
                     'vue-loader'
                 ]
             },
@@ -68,9 +67,8 @@ module.exports = {
                 use: {
                     loader: 'url-loader',
                     options: {
-                        limit: 5 * 1024, // 图片大小 > limit 使用file-loader, 反之使用url-loader
+                        limit: 5 * 1024,
                         outputPath: 'images',
-                        // publicPath: '../images/'
                     }
                 }
             },
@@ -79,9 +77,9 @@ module.exports = {
                 use: {
                     loader: 'url-loader',
                     options: {
-                        limit: 5 * 1024, // 图片大小 > limit 使用file-loader, 反之使用url-loader
-                        outputPath: 'assets',
-                        publicPath: '../assets/'
+                        limit: 5 * 1024,
+                        outputPath: 'fonts',
+                        publicPath: '../static/fonts/'
                     }
                 }
             }

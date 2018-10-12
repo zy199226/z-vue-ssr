@@ -21,7 +21,7 @@ if (os.networkInterfaces().en4) {
 const devWebpackConfig = merge(baseWebpackConfig, {
     devServer: {
         contentBase: path.join(__dirname, '../dist'),
-        publicPath: '/',
+        publicPath: '/static',
         compress: true,
         host: ip,
         port: 9090,
