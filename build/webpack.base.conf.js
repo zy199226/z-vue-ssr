@@ -6,9 +6,9 @@ const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 const chalk = require('chalk');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
-const devMode = !/production/.test(process.env.npm_lifecycle_script);
+const devMode = process.env.NODE_ENV === 'production';
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
-
+const staticPath = devMode ? 'static/' : '';
 
 module.exports = {
     entry: {
@@ -16,10 +16,10 @@ module.exports = {
     },
 
     output: {
-        path: path.resolve(__dirname, '../dist/static'),
+        path: path.resolve(__dirname, '../dist/', staticPath),
         filename: 'js/[name].[hash:8].js',
         chunkFilename: 'js/[name].[hash:8].js',
-        publicPath: '/static/'
+        publicPath: `/${staticPath}`
     },
 
     module: {
@@ -42,7 +42,7 @@ module.exports = {
             {
                 test: /\.(sc|c)ss$/,
                 use: [
-                    devMode ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
+                    devMode ? MiniCssExtractPlugin.loader : 'vue-style-loader',
                     'css-loader',
                     'postcss-loader',
                     'sass-loader'
@@ -51,7 +51,7 @@ module.exports = {
             {
                 test: /\.sass$/,
                 use: [
-                    devMode ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
+                    devMode ? MiniCssExtractPlugin.loader : 'vue-style-loader',
                     'css-loader',
                     'postcss-loader',
                     {
@@ -79,7 +79,7 @@ module.exports = {
                     options: {
                         limit: 5 * 1024,
                         outputPath: 'fonts',
-                        publicPath: '../static/fonts/'
+                        publicPath: `../${staticPath}fonts/`
                     }
                 }
             }
@@ -101,8 +101,8 @@ module.exports = {
 
     plugins: [
         new MiniCssExtractPlugin({
-            filename: devMode ? 'css/[name].css' : 'css/[name].[hash:8].css',
-            chunkFilename: devMode ? 'css/[id].css' : 'css/[id].[hash:8].css'
+            filename: devMode ? 'css/[name].[hash:8].css' : 'css/[name].css',
+            chunkFilename: devMode ? 'css/[id].[hash:8].css' : 'css/[id].css'
         }),
         new HappyPack({
             id: 'happyBabel',

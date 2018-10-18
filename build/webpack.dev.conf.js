@@ -21,7 +21,7 @@ if (os.networkInterfaces().en4) {
 const devWebpackConfig = merge(baseWebpackConfig, {
     devServer: {
         contentBase: path.join(__dirname, '../dist'),
-        publicPath: '/static',
+        publicPath: '/',
         compress: true,
         host: ip,
         port: 9090,
@@ -49,7 +49,6 @@ const devWebpackConfig = merge(baseWebpackConfig, {
             template: path.join(__dirname, '../src/index.html'),
             inject: true,
             minify: true,
-            hash: true,
         }),
     ]
 });
