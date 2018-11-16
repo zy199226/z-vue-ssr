@@ -10,6 +10,7 @@ const c = () => import('../pages/c.vue');
 
 
 export default new Router({
+    mode: 'history',
     routes: [
         {
             path: '/',
