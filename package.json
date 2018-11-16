@@ -8,7 +8,7 @@
     "dev": "webpack-dev-server --mode development --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "client": "NODE_ENV=production webpack --mode production --config build/webpack.client.conf.js",
-    "server": "webpack --mode production --config build/webpack.server.conf.js && node server/index.js",
+    "server": "webpack --mode production --config build/webpack.server.conf.js && node --inspect server/index.js",
     "ssr": "npm run client && npm run server"
   },
   "repository": {
@@ -72,6 +72,7 @@
     "webpack-parallel-uglify-plugin": "^1.1.0"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "babel-runtime": "^6.26.0",
     "compression": "^1.7.3",
     "express": "^4.16.4",
