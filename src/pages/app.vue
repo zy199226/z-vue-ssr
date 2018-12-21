@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import 'normalize.css';
+import 'normalize.css'; // 重置 css
 
 export default {
 };

@@ -1,5 +1,5 @@
-import axios from '../config/axiosCore';
-import { TEST1 } from '../config/api';
+import axios from '../options/axiosCore';
+import { TEST1 } from '../options/api';
 
 /**
  * 测试1
