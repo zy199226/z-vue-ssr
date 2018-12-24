@@ -8,7 +8,6 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 const devMode = process.env.NODE_ENV === 'production';
 const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
-const staticPath = devMode ? 'static/' : '';
 
 module.exports = {
     entry: {
@@ -16,10 +15,10 @@ module.exports = {
     },
 
     output: {
-        path: path.resolve(__dirname, '../dist/', staticPath),
+        path: path.resolve(__dirname, '../dist/', 'static'),
         filename: 'js/[name].[hash:8].js',
         chunkFilename: 'js/[name].[hash:8].js',
-        publicPath: `/${staticPath}`
+        publicPath: '/static/'
     },
 
     module: {
@@ -67,7 +66,7 @@ module.exports = {
                 use: {
                     loader: 'url-loader',
                     options: {
-                        limit: 5 * 1024,
+                        limit: 5 * 1024, // 小于 5k 的转成 base64 格式，大于的生成图片放到 image 中
                         outputPath: 'images',
                     }
                 }
@@ -79,7 +78,7 @@ module.exports = {
                     options: {
                         limit: 5 * 1024,
                         outputPath: 'fonts',
-                        publicPath: `../${staticPath}fonts/`
+                        publicPath: '../fonts/' // 因为引入位置在 css 中，所以单独设置相对路径
                     }
                 }
             }

@@ -8,12 +8,22 @@
 
 <script>
 export default {
-    asyncData({ store, route }) {
-        if (!store.state.bbb.pic) {
-            return store.dispatch('bbb');
+    asyncData(obj) { return this.methods.asyncData(obj); },
+
+    mounted() {
+        if (!this.$store.state.bbb.pic) {
+            this.asyncData({ store: this.$store, route: this.$route });
         }
-        return false;
     },
+
+    methods: {
+        asyncData({ store, route }) {
+            if (!store.state.bbb.pic) {
+                return store.dispatch('bbb');
+            }
+            return false;
+        },
+    }
 };
 </script>
 

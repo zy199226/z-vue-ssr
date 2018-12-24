@@ -12,7 +12,7 @@
 这个文件下面都是跑在服务端的，因为其中包含 'react' 代码，所以会提前使用 'webpack' 打包后再运行。结构比较简单，可以很方便的拓展来支持更多的服务端需求。
 
 '/src'
-这个下面就全都是前端项目文件。对于项目中的文件放置问题，我认为还是有必要约束一下。在我们的工作中，不可避免的都会接手别人的项目，或者是多人项目，或者是帮别人解决个BUG，都会花比较长的时间来了解项目的基本情况，来找到别人写的关键部分到底在哪。这样一团糟的项目，相信不管是谁都会感到头痛。
+这个下面就全都是前端项目文件。对于项目中的文件放置问题，还是有必要做好分类放置的。在我们的工作中，不可避免的都会接手别人的项目，或者是多人项目，都会花比较长的时间来了解项目或者沟通上。一个管理混乱的项目，不管是谁都不想碰到的。
 
 所以我们需要对整个项目的结构做一定的约束，统一管理起来。
 
@@ -64,3 +64,340 @@
 
 #### /build/webpack.base.conf.js
 这个是 webpack 的基础配置文件，被其他配置文件所依赖，有下列几个可配置部分：
+
+1、输出文件路径
+
+```javascript
+output: {
+    path: path.resolve(__dirname, '../dist/', 'static'),
+    filename: 'js/[name].[hash:8].js',
+    chunkFilename: 'js/[name].[hash:8].js',
+    publicPath: '/static/' // 这里可设置项目 '绝对路径' 和 '相对路径'
+},
+```
+
+2、loader 相关
+
+这里放置的都是loader相关的配置，使用了 'sass'、'postcss' 等，如需其他配置，请自行添加，可参考[loader](https://webpack.docschina.org/concepts/loaders/#%E7%A4%BA%E4%BE%8B)。
+
+```javascript
+module: {
+    rules: [
+        {
+            test: /\.vue$/,
+            use: [
+                'vue-loader'
+            ]
+        },
+        {
+            test: /\.js$/,
+            use: {
+                loader: 'happypack/loader?id=happyBabel'
+            },
+            exclude: [
+                path.join(__dirname, '../node_modules')
+            ]
+        },
+        {
+            test: /\.(sc|c)ss$/,
+            use: [
+                devMode ? MiniCssExtractPlugin.loader : 'vue-style-loader',
+                'css-loader',
+                'postcss-loader',
+                'sass-loader'
+            ]
+        },
+        {
+            test: /\.sass$/,
+            use: [
+                devMode ? MiniCssExtractPlugin.loader : 'vue-style-loader',
+                'css-loader',
+                'postcss-loader',
+                {
+                    loader: 'sass-loader',
+                    options: {
+                        indentedSyntax: true
+                    }
+                }
+            ]
+        },
+        {
+            test: /\.(png|jpeg|jpg|gif)$/,
+            use: {
+                loader: 'url-loader',
+                options: {
+                    limit: 5 * 1024, // 小于 5k 的转成 base64 格式，大于的生成图片放到 image 中
+                    outputPath: 'images',
+                }
+            }
+        },
+        {
+            test: /\.(svg|bmp|eot|woff|woff2|ttf)$/,
+            use: {
+                loader: 'url-loader',
+                options: {
+                    limit: 5 * 1024,
+                    outputPath: 'fonts',
+                    publicPath: '../fonts/' // 因为引入位置在 css 中，所以单独设置相对路径
+                }
+            }
+        }
+    ]
+},
+```
+
+3、resolve
+
+这些选项能设置模块如何被解析，自行设置请参考[模块解析](https://webpack.docschina.org/configuration/resolve/#src/components/Sidebar/Sidebar.jsx)。
+
+```javascript
+resolve: {
+    extensions: ['.js', '.jsx', '.json'],
+    alias: {
+        '@': path.join(__dirname, '..', 'src')
+    }
+},
+```
+
+4、统计信息
+
+因为打包后的输出统计信息太多了，所以我把一些信息给关掉了，自行设置请参考[统计信息](https://webpack.docschina.org/configuration/stats/#stats)。
+
+```javascript
+stats: {
+    children: false,
+    modules: false,
+    warnings: false
+},
+```
+
+5、插件
+
+提取 css 等样式文件：[MiniCssExtractPlugin](https://webpack.js.org/plugins/mini-css-extract-plugin/)
+
+多核心打包，提升打包速度的，小项目提升不明显：[HappyPack](https://github.com/amireh/happypack)
+
+没什么用，显示打包进度条：[ProgressBarPlugin](https://www.npmjs.com/package/progress-bar-webpack-plugin)
+
+vue 专用的 loader：[VueLoaderPlugin](https://vue-loader.vuejs.org/zh/guide/)
+
+```javascript
+plugins: [
+    new MiniCssExtractPlugin({
+        filename: devMode ? 'css/[name].[hash:8].css' : 'css/[name].css',
+        chunkFilename: devMode ? 'css/[id].[hash:8].css' : 'css/[id].css'
+    }),
+    new HappyPack({
+        id: 'happyBabel',
+        loaders: [{
+            loader: 'babel-loader?cacheDirectory=true'
+        }],
+        threadPool: happyThreadPool,
+        verbose: true
+    }),
+    new ProgressBarPlugin({
+        format: `build [:bar] ${chalk.green.bold(':percent')} (:elapsed seconds)`,
+        clear: false
+    }),
+    new VueLoaderPlugin()
+]
+```
+
+#### /build/webpack.dev.conf.js
+1、devServer
+
+webpack-dev-server 配置，参考[devServer](https://webpack.docschina.org/configuration/dev-server/)。
+
+```javascript
+devServer: {
+    contentBase: path.join(__dirname, '../dist'), // 告诉服务器从哪个目录中提供内容
+    publicPath: '/',
+    compress: true, // 服务是否启用 gzip 压缩
+    host: ip,
+    port: 9090,
+    hot: true, // 启用 webpack 的模块热替换特性
+    inline: true, // 启用内联模式
+    open: true, // 自动打开浏览器
+    clientLogLevel: 'warning', // 使用内联模式时，会在开发工具(DevTools)的控制台(console)显示消息
+    quiet: true, // 除了初始启动信息之外的任何内容都不会被打印到控制台
+    historyApiFallback: true,
+    // proxy: { // 本地代理
+    //     '/api': {
+    //         target: 'http://10.100.4.63:3000',
+    //         // pathRewrite: { '^/api': '' },
+    //         changeOrigin: true
+    //     }
+    // }
+},
+```
+
+2、插件
+
+webpack 内置的热替换模块，无需设置，可作了解：[HotModuleReplacementPlugin](https://webpack.docschina.org/plugins/hot-module-replacement-plugin/#src/components/Sidebar/Sidebar.jsx)
+
+启用 HotModuleReplacementPlugin 时，此插件将显示模块的相对路径。无需设置，建议用于开发：[NamedModulesPlugin](https://webpack.docschina.org/plugins/named-modules-plugin/#src/components/Sidebar/Sidebar.jsx)
+
+生成 html 用的：[HtmlWebpackPlugin](https://github.com/jantimon/html-webpack-plugin#options)
+
+```javascript
+plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin(),
+    new HtmlWebpackPlugin({
+        filename: 'index.html',
+        template: path.join(__dirname, '../src/index.html'),
+        inject: true,
+        hash: true,
+    }),
+]
+```
+
+#### /build/webpack.prod.conf.js
+1、optimization（优化）
+
+splitChunks 用来分割模块打包，根据 splitChunks.cacheGroups 下的对象里面的条件进行分割的，具体的分割条件可查看[一步一步的了解webpack4的splitChunk插件](https://juejin.im/post/5af1677c6fb9a07ab508dabb)这篇文章，写得比较详细。
+
+minimizer 在 production 模式下对代码进行压缩，因为某些原因，这里我从新引入两个更高效率的压缩插件。
+
+```javascript
+optimization: {
+    runtimeChunk: {
+        name: 'manifest'
+    },
+    splitChunks: {
+        cacheGroups: {
+            commons: {
+                chunks: 'initial', // initial、async和all(默认是async)
+                minChunks: 2, // 超过引用次数的会被分割（默认是1）
+                maxInitialRequests: 5, // 最大初始化请求书，默认3
+                minSize: 0 // 形成一个新代码块最小的体积(默认是30000)
+            },
+            // vendor: {
+            //     test: /[\\/]node_modules[\\/]/, // 用于控制哪些模块被这个缓存组匹配到。原封不动传递出去的话，它默认会选择所有的模块。可以传递的值类型：RegExp、String和Function
+            //     chunks: 'all',
+            //     name: 'vendor', // 打包的chunks的名字(字符串或者函数，函数可以根据条件自定义名字)
+            //     priority: -20, // 缓存组打包的先后优先级
+            //     enforce: true
+            // },
+            styles: {
+                name: 'styles',
+                test: /\.css$/,
+                chunks: 'all',
+                enforce: true
+            }
+        }
+    },
+    minimizer: [
+        new OptimizeCSSAssetsPlugin({}),
+        new WebpackParallelUglifyPlugin({
+            uglifyJS: {
+                output: {
+                    beautify: false, // 不需要格式化
+                    comments: false // 不保留注释
+                },
+                compress: {
+                    warnings: false, // 在UglifyJs删除没有用到的代码时不输出警告
+                    drop_console: true, // 删除所有的 `console` 语句，可以兼容ie浏览器
+                    collapse_vars: true, // 内嵌定义了但是只用到一次的变量
+                    reduce_vars: true // 提取出出现多次但是没有定义成变量去引用的静态值
+                }
+            }
+        })
+    ]
+},
+```
+
+2、插件
+这俩插件比较常见，可自行搜索查看详细信息。
+```javascript
+plugins: [
+    new CleanWebpackPlugin(
+        ['dist/'],
+        {
+            root: path.join(__dirname, '../'),
+            verbose: true,
+            dry: false
+        }
+    ),
+    new HtmlWebpackPlugin({
+        // favicon: path.join(__dirname, '../src/favicon.ico'),
+        filename: path.join(__dirname, '../dist/index.html'),
+        template: path.join(__dirname, '../src/index.html'),
+        inject: true
+    })
+]
+```
+
+#### /package.json
+这个文件里面有一个对象是可以设置的，针对的是 autoprefixer 自动补全插件、babel 转码器等需要判断兼容版本的工具，所以我们可以自动的去适应大部分的浏览器。下面的这个设置项的意思是「使用量大于1%，浏览器的最后两个版本，不小于ie8」，所以最后打包出来的项目会自动补全 css 前缀到适应这个范围内。
+
+当然这个插件并不是万无一失的，还是会有一些版本的浏览器的某些 css，是无法补全前缀来实现功能的，在开发中要多加注意像 ie 这种异类，然后在一些手机端项目上，主流浏览器上，都可以放心的去开发。
+
+你可以在这里面加上我们常用的配置，例如："iOS >= 8",, "Android > 4.4", "Firefox >= 20" 等，我们在开发中需要特别针对的浏览器版本，查看[Browserslist](https://github.com/browserslist/browserslist#best-practices)了解更多配置列表。
+
+```json
+"browserslist": [
+  "> 1%",
+  "last 2 versions",
+  "not ie <= 8"
+]
+```
+
+# 服务端渲染
+前端渲染面临的主要问题有两个：SEO、首屏性能。如果你们的项目并不重视这两个问题，那就没必要用「服务端渲染」，自己个人尝试和了解还是不错的。
+
+「服务端渲染」最核心的是 'renderToString' 这个服务端方法，在服务端收到请求后能迅速的把项目代码转换成静态的 DOM 结构页面，然后直接返回给浏览器就好了，这样就是一个简单的服务端渲染。当然这只是最理想的状态，实际上我们需要考虑得更多，例如：页面加载时的数据该怎么处理、服务器的性能该如何兼顾、资源该如何加载等，这些在下面我都会一一介绍。
+
+「服务端渲染」是我在上面的脚手架完成后才加入的，所以在结构上来说，「服务端渲染」完全依赖「客户端渲染」的配置，把「服务端渲染」相关的内容全部删掉，也不会影响到脚手架的基本功能。
+
+### 写法差异&数据处理
+「服务端渲染」最直观的理解就是把完整的静态页面返回给客户端，包括页面的数据。
+
+由于没有动态更新，所有的生命周期钩子函数中，只有 beforeCreate 和 created 会在服务器端渲染(SSR)过程中被调用。这就是说任何其他生命周期钩子函数中的代码（例如 beforeMount 或 mounted），只会在客户端执行。
+
+因为「服务端渲染」是需要在页面请求的时候把完整的页面传回去，包括你向后端请求的数据，所以我们需要在服务端把数据请求好，和页面一起传回去。
+
+所以因为这一点，造成了我们在页面加载时请求的数据，需要用其他方法来处理，我们需要在服务端运行的时候捕获需要完成的任务，在这里我们定义了一个 'asyncData' 的异步方法，这样的就可以在服务端接收到请求时，主动去把当前请求页面的 'asyncData' 方法捕获出来并完成这个任务，然后再统一返回数据。
+
+其实我们还是可以在前端渲染和服务端渲染统一写法，因为需要提前请求数据的方法都是通过静态方法 asyncData 来调用的，所以我们可以在 mounted 里面来调用静态方法 asyncData，只需要写好满足调用条件就可以，例如： 可以判断store有没有数据、或者在store里面设置状态值（pending, status）等，来避免多余触发。这样就可以提前写好，想用哪种渲染方法都可以。
+
+下面这一段是比较简单的服务端渲染的写法，可作参考。
+
+```javascript
+// /src/pages/a.vue
+<template lang="html">
+    <div class="hhh">
+        aaa
+        <img src="../assets/2.png" alt="">
+        <span>{{ $store.state.count }}</span>
+        <button type="button" name="button" @click="abc">aaa</button>
+    </div>
+</template>
+
+<script>
+export default {
+    asyncData(obj) { return this.methods.asyncData(obj); },
+
+    mounted() {
+        if (!this.$store.state.count) {
+            this.asyncData({ store: this.$store, route: this.$route });
+        }
+    },
+
+    methods: {
+        asyncData({ store, route }) {
+            return store.dispatch('inc');
+        },
+
+        abc() {
+            console.log(this.$store.state);
+        },
+    },
+};
+</script>
+
+<style lang="sass" scoped>
+    .hhh
+        color: pink
+</style>
+```

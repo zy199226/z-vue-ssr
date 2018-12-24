@@ -2,28 +2,30 @@
     <div class="hhh">
         aaa
         <img src="../assets/2.png" alt="">
-        <span>{{ value }}</span>
+        <span>{{ $store.state.count }}</span>
         <button type="button" name="button" @click="abc">aaa</button>
     </div>
 </template>
 
 <script>
 export default {
-    asyncData({ store, route }) {
-        return store.dispatch('inc');
+    asyncData(obj) { return this.methods.asyncData(obj); },
+
+    mounted() {
+        if (!this.$store.state.count) {
+            this.asyncData({ store: this.$store, route: this.$route });
+        }
     },
 
     methods: {
+        asyncData({ store, route }) {
+            return store.dispatch('inc');
+        },
+
         abc() {
             console.log(this.$store.state);
         },
     },
-
-    computed: {
-        value() {
-            return this.$store.state.count;
-        }
-    }
 };
 </script>
 
