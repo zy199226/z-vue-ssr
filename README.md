@@ -21,30 +21,31 @@
 - pages 和 components 文件夹，前者放置的是页面以及页面强依赖的组件，例如注册页面 login，用户管理界面 user 等等。后者则放置的是公共组件。与公共资源文件一样，强依赖的组件就应该和其页面在同一个文件夹中去管理。
 
 ```text
-├── build
-│   ├── entry-client.js
-│   ├── entry-server.js
-│   ├── webpack.base.conf.js
-│   ├── webpack.client.conf.js
-│   ├── webpack.dev.conf.js
-│   ├── webpack.prod.conf.js
-│   └── webpack.server.conf.js
-├── server
-│   ├── controller
-│   │   └── default.js
-│   ├── util
-│   └── index.js
-└── src
-    ├── assets
-    ├── components
-    ├── controller
-    ├── options
-    ├── router
-    ├── store
-    ├── util
-    ├── index.html
-    ├── index.js
-    └── ssr.entry.js
+├── build                       // webpack 配置相关
+│   ├── entry-client.js         // 「ssr」客户端打包入口文件
+│   ├── entry-server.js         // 「ssr」服务端打包入口文件（生成服务端需要的项目信息）
+│   ├── webpack.base.conf.js    // 基础webpack配置，被其他配置所依赖
+│   ├── webpack.dev.conf.js     // 「webpack-dev-server」配置，本地开发使用
+│   ├── webpack.prod.conf.js    // 打包静态文件配置
+│   ├── webpack.client.conf.js  // 「ssr」客户端的配置
+│   └── webpack.server.conf.js  // 「ssr」服务端的配置
+├── server                      // 服务端相关
+│   ├── controller              // 控制器，用于数据处理返回
+│   │   └── default.js          // 默认返回资源--在服务端生成页面
+│   ├── util                    // 工具类文件
+│   └── index.js                // 服务端入口
+└── src                         // 客户端相关
+    ├── assets                  // 公共资源文件
+    ├── components              // 项目公共组件
+    ├── options                 // 一些辅助的文件
+    ├── controller              // 控制器，用于数据管理
+    ├── pages                   // 页面具体逻辑
+    ├── router                  // 路由
+    ├── store                   // 状态管理
+    ├── util                    // 工具类文件
+    ├── index.html              // 需要提前写入的html配置，都可以写在这里面，所有生成的新html文件都以这个为基础
+    ├── index.js                // 项目入口
+    └── ssr.entry.js            // 「ssr」项目入口
 ```
 
 ### 代码规范
@@ -401,3 +402,25 @@ export default {
         color: pink
 </style>
 ```
+
+### 可配置项
+
+因为是在前端渲染的基础上面做的这个服务端渲染，所以会存在相似但是有差异性的文件，这方面需要多注意。
+
+#### /build/webpack.client.conf.js
+这个是服务端打包的静态文件配置，依赖于 '/build/webpack.prod.conf.js' ，只是重新定义了入口文件，还有就是加了一个获取生成文件信息的插件。
+
+#### /build/webpack.server.conf.js
+用来打包运行在服务端的项目文件，这个配置是用 '/build/webpack.base.conf.js' 文件修改得来的，如果你需要修改，请多关注这两个文件的异同性，小心修改，保证处理项目文件的相同功能。可以先看看[webpack文档](https://webpack.docschina.org/concepts)学习一下。
+
+#### /src/ssr.entry.js
+服务端静态文件打包入口文件，和 '/src/index.js' 入口文件类似，但多了一些服务端的相关配置（同步合并数据），修改时也请对两个文件同时修改。
+
+### 服务端相关
+
+#### /server/index.js
+服务端入口文件，这里面写的都是 express 相关，其中有一个随手写的测试用的接口，不需要的话请直接删除。
+
+## PS
+
+关于「服务端渲染」，我上面只是写了一些差异性，如果你想了解更多，可以看看官方出品的[Vue SSR 指南](https://ssr.vuejs.org/zh/)，这里面写得非常仔细，我也是参考这个做出来的
