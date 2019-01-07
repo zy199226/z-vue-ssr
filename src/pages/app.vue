@@ -17,8 +17,8 @@ export default {
 </script>
 
 <style lang="sass">
-    a
-        color: cyan
-    p
-        color: pink
+a
+    color: cyan
+p
+    color: pink
 </style>
