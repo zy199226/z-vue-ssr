@@ -151,7 +151,7 @@ module: {
                 options: {
                     limit: 5 * 1024,
                     outputPath: 'fonts',
-                    publicPath: '../fonts/' // 因为引入位置在 css 中，所以单独设置相对路径
+                    publicPath: '../fonts/' // 因为引入位置在 css 中，所以单独设置相对路径
                 }
             }
         }
@@ -371,7 +371,7 @@ npm i                  // 首先需要安装依赖
 
 npm start              // 仍然使用 webpack-dev-server 作为开发模式，你需要把下面的「写法差异&数据处理」这一部分好好看看
 
-npm run ssr-client     // 打包服务端渲染客户端静态文件
+npm run ssr-client     // 打包服务端渲染客户端静态文件
 
 npm run ssr-server     // 打包服务端渲染服务端静态文件
 
@@ -471,7 +471,7 @@ const microCache = LRU({
 /**
  * 判断是否需要缓存处理
  * @param  {Object}  req 请求相关数据
- * @return {Boolean}     true: 需要缓存，false: 不需要。默认返回 true
+ * @return {Boolean}     true: 需要缓存，false: 不需要。默认返回 true
  */
 const isCacheable = (req) => {
     // console.log(req);
