@@ -19,13 +19,13 @@ module.exports = merge(baseWebpackConfig, {
                     maxInitialRequests: 5, // 最大初始化请求书，默认3
                     minSize: 0 // 形成一个新代码块最小的体积(默认是30000)
                 },
-                // vendor: {
-                //     test: /[\\/]node_modules[\\/]/, // 用于控制哪些模块被这个缓存组匹配到。原封不动传递出去的话，它默认会选择所有的模块。可以传递的值类型：RegExp、String和Function
-                //     chunks: 'all',
-                //     name: 'vendor', // 打包的chunks的名字(字符串或者函数，函数可以根据条件自定义名字)
-                //     priority: -20, // 缓存组打包的先后优先级
-                //     enforce: true
-                // },
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/, // 用于控制哪些模块被这个缓存组匹配到。原封不动传递出去的话，它默认会选择所有的模块。可以传递的值类型：RegExp、String和Function
+                    chunks: 'all',
+                    name: 'vendor', // 打包的chunks的名字(字符串或者函数，函数可以根据条件自定义名字)
+                    priority: -20, // 缓存组打包的先后优先级
+                    enforce: true
+                },
                 styles: {
                     name: 'styles',
                     test: /\.css$/,
